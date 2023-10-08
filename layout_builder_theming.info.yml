@@ -1,0 +1,8 @@
+name: 'layout_builder_theming'
+type: module
+description: 'Theming System of Layout Paragraph'
+core: 8.x
+core_version_requirement: ^8 || ^9 | ^10
+package: 'Paragraphs'
+dependencies:
+  - layout_paragraphs:layout_paragraphs
