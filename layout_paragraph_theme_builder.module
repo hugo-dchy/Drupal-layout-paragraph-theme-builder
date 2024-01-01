@@ -10,7 +10,18 @@ function layout_paragraph_theme_builder_theme_registry_alter(&$theme_registry) {
 
   // Just do that if the theme is 'admin' and the page is the add or edit node form.
   if($route_is_admin && ($route_name == 'entity.node.edit_form' || $route_name == 'node.add')) {
-    /** @var \Drupal\Core\File\FileSystemInterface $file_system */
+
+    $exceptions = [
+      "block--local-tasks-block.html.twig",
+      "breadcrumb.html.twig",
+      "status-messages.html.twig",
+    ];
+
+
+    /**
+     * @var \Drupal\Core\File\FileSystemInterface $file_system
+     * */
+
     $file_system = \Drupal::service('file_system');
     $defaultThemeName = \Drupal::config('system.theme')->get('default');
     $theme_path = \Drupal::service('extension.list.theme')->getPath($defaultThemeName);
@@ -20,19 +31,22 @@ function layout_paragraph_theme_builder_theme_registry_alter(&$theme_registry) {
 
     foreach ($files as $file) {
 
-      $templates_path = str_replace($file->filename,"",$file->uri);
-      $template_file = str_replace(".html.twig","",$file->filename);
-      $template_name = str_replace("-","_",$template_file);
+      if(!in_array($file->filename, $exceptions)) {
+        $templates_path = str_replace($file->filename, "", $file->uri);
+        $template_file = str_replace(".html.twig", "", $file->filename);
+        $template_name = str_replace("-", "_", $template_file);
 
-      $theme_registry_base = explode("__",$template_name);
+        $theme_registry_base = explode("__", $template_name);
 
 
-      isset($theme_registry[$theme_registry_base[0]]['render element']) ? $theme_registry[$template_name]['render element'] = $theme_registry[$theme_registry_base[0]]['render element'] : [];
-      isset($theme_registry[$theme_registry_base[0]]['type']) ? $theme_registry[$template_name]['type'] = $theme_registry[$theme_registry_base[0]]['type'] : [];
-      $theme_registry[$template_name]['theme path'] = $theme_path;
-      $theme_registry[$template_name]['template'] = $template_file;
-      $theme_registry[$template_name]['path'] = $templates_path;
-      $theme_registry[$template_name]['preprocess functions'] = $theme_registry[$theme_registry_base[0]]['preprocess functions'];
+        isset($theme_registry[$theme_registry_base[0]]['render element']) ? $theme_registry[$template_name]['render element'] = $theme_registry[$theme_registry_base[0]]['render element'] : [];
+        isset($theme_registry[$theme_registry_base[0]]['type']) ? $theme_registry[$template_name]['type'] = $theme_registry[$theme_registry_base[0]]['type'] : [];
+        isset($theme_registry[$theme_registry_base[0]]['preprocess functions']) ? $theme_registry[$template_name]['preprocess functions'] = $theme_registry[$theme_registry_base[0]]['preprocess functions'] : [];
+
+        $theme_registry[$template_name]['theme path'] = $theme_path;
+        $theme_registry[$template_name]['template'] = $template_file;
+        $theme_registry[$template_name]['path'] = $templates_path;
+      }
 
     }
 
