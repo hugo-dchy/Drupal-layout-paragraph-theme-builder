@@ -103,6 +103,10 @@ function layout_paragraph_theme_builder_is_layout_builder_form_id($form_id, arra
     return TRUE;
   }
 
+  if (str_starts_with($form_id, 'node') && str_ends_with($form_id, 'form')) {
+    return TRUE;
+  }
+
   return FALSE;
 }
 
